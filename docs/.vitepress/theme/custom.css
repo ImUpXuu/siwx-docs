@@ -1,0 +1,7 @@
+/* 首页宣发页全出血（仅作用于 home 布局，不影响文档页） */
+.VPHome { padding: 0 !important; }
+.VPHome .container {
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}

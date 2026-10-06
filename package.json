@@ -1,0 +1,15 @@
+{
+  "name": "siwx-docs",
+  "private": true,
+  "type": "module",
+  "description": "SIWX 文档站（VitePress）— 仅用于文档构建，Python 运行时不依赖 Node",
+  "scripts": {
+    "docs:dev": "node docs/.vitepress/check-privacy.mjs && vitepress dev docs",
+    "docs:build": "node docs/.vitepress/check-privacy.mjs && vitepress build docs",
+    "docs:build:fast": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.3"
+  }
+}

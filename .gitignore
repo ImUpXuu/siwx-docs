@@ -1,0 +1,17 @@
+# Node / 构建产物
+node_modules/
+docs/.vitepress/cache/
+docs/.vitepress/dist/
+dist/
+build/
+
+# 本地私有产物（红线：永不入库）
+logs/
+output/
+exports/
+*.log
+.DS_Store
+
+# 编辑器/助手
+.workbuddy-ai/
+.zcodeignore

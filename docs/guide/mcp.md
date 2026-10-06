@@ -2,6 +2,8 @@
 
 SIWX 内置 MCP Server（stdio + JSON-RPC 2.0），让支持 MCP 的 AI 客户端直接检索与导出你的聊天记录和朋友圈。
 
+![MCP 页](./images/console-mcp.png)
+
 ## 接入配置
 
 在 Web 控制台的 MCP 页面复制以下配置到你的 MCP 客户端（路径改成你自己的 run.py 所在位置）：

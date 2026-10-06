@@ -10,7 +10,7 @@
 | 2. 选择账号 | 从本机识别到的微信账号中选择要处理的账号 |
 | 3. 提取并解密 | 自动提取密钥、解密数据库、生成可浏览数据 |
 
-解密完成后，左侧菜单即可进入[聊天查看](/guide/webconsole)、[朋友圈](/guide/sns)、[统计](/guide/webconsole)、[导出](/guide/export)等页面。
+解密完成后，左侧菜单即可进入[聊天查看](/guide/webconsole)、[朋友圈](/guide/sns)、[统计](/guide/webconsole)、[导出](/guide/export)等页面，聊天记录已经是可浏览、可搜索的状态。
 
 ::: tip macOS 用户注意
 密钥未缓存时，点击"提取并解密"后请在 **60 秒内重新登录微信**。详见[安装 → macOS 重要说明](/guide/install#macos-重要说明)。

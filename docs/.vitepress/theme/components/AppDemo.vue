@@ -1,7 +1,7 @@
 <template>
   <div class="demo" :class="{ interacted }">
     <!-- ═══ 侧栏（复刻 siwx/ui 壳层） ═══ -->
-    <aside class="side">
+    <aside class="side" ref="sideEl">
       <div class="brand">
         <span class="logo">✦</span>
         <span class="brand-name">stories</span><span class="brand-dim">-in-</span><span class="brand-name">wx</span>
@@ -16,6 +16,7 @@
           <span class="ico" v-html="m.icon"></span><span>{{ m.label }}</span>
         </a>
       </nav>
+      <span class="menu-marker" :style="markerStyle" aria-hidden="true"><i :key="pulseN" class="ring"></i></span>
       <div class="side-foot">
         <span class="mini">微信：运行中 · 本地模式</span>
         <button class="mini-btn" title="免责声明">⚖</button>
@@ -247,7 +248,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
+import { ref, reactive, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 
 const SVG = {
   guide: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2.1 4.9-4.9 2.1 2.1-4.9z"/></svg>',
@@ -276,6 +277,26 @@ const interacted = ref(false)
 let timer = null
 let ti = 1 // 从 chat 后一项继续巡检
 
+/* 假光标：吸附到当前巡检的菜单项，带点击波纹；用户点击后隐藏 */
+const sideEl = ref(null)
+const markerXY = ref({ x: -40, y: 0 })
+const pulseN = ref(0)
+const markerStyle = computed(() => ({
+  transform: `translate(${markerXY.value.x}px, ${markerXY.value.y}px) translate(-50%, -50%)`,
+}))
+
+function updateMarker() {
+  const side = sideEl.value
+  const el = side?.querySelector('.menu a.on')
+  if (!side || !el) return
+  const s = side.getBoundingClientRect()
+  const r = el.getBoundingClientRect()
+  markerXY.value = { x: r.right - s.left - 16, y: r.top - s.top + r.height / 2 }
+  pulseN.value++
+}
+
+watch(active, () => nextTick(updateMarker))
+
 function go(key) {
   active.value = key
   interacted.value = true
@@ -289,8 +310,13 @@ onMounted(() => {
     active.value = PAGES[ti % PAGES.length].key
     ti++
   }, 6500)
+  nextTick(updateMarker)
+  window.addEventListener('resize', updateMarker)
 })
-onBeforeUnmount(() => { if (timer) clearInterval(timer) })
+onBeforeUnmount(() => {
+  if (timer) clearInterval(timer)
+  window.removeEventListener('resize', updateMarker)
+})
 
 /* 聊天演示数据（占位） */
 const sessions = [
@@ -356,7 +382,7 @@ const tools = reactive([
 .demo * { box-sizing: border-box; }
 
 /* ── 侧栏 ── */
-.side { width: 218px; flex: none; display: flex; flex-direction: column; border-right: 1px solid var(--line); padding: 16px 12px; background: var(--card); }
+.side { position: relative; width: 218px; flex: none; display: flex; flex-direction: column; border-right: 1px solid var(--line); padding: 16px 12px; background: var(--card); }
 .brand { display: flex; align-items: center; gap: 6px; padding: 2px 6px 18px; }
 .logo { width: 30px; height: 30px; border-radius: var(--radius-sm); flex: none; background: var(--text); color: var(--card); font-size: 13px; font-weight: 700; display: grid; place-items: center; }
 .brand-name { font-size: 15px; font-weight: 700; }
@@ -535,6 +561,27 @@ const tools = reactive([
 .logbox { font-size: 12px; line-height: 2.05; max-height: 430px; overflow-y: auto; scrollbar-width: thin; }
 .logbox .tm2 { font-style: normal; color: var(--muted); margin-right: 8px; }
 
+/* ── 假光标（自动巡检）：滑向当前项 + 到位波纹，用户点击后隐藏 ── */
+.menu-marker {
+  position: absolute; left: 0; top: 0; z-index: 30;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--text);
+  box-shadow: 0 0 0 10px rgba(0, 0, 0, 0.08);
+  opacity: 1;
+  transition: transform 0.55s var(--ease), opacity 0.35s ease;
+  pointer-events: none;
+}
+.demo.interacted .menu-marker { opacity: 0; transition: transform 0.55s var(--ease), opacity 0.3s ease; }
+.menu-marker .ring {
+  position: absolute; inset: -4px; border-radius: 50%;
+  border: 2px solid var(--text); opacity: 0;
+  animation: ringBurst 0.7s ease-out both;
+}
+@keyframes ringBurst {
+  0% { transform: scale(0.55); opacity: 0.45; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+
 /* ── 交互提示 ── */
 .demo-hint {
   position: absolute; right: 14px; bottom: 12px; z-index: 5;
@@ -560,5 +607,6 @@ const tools = reactive([
 }
 @media (prefers-reduced-motion: reduce) {
   .vp-enter-active, .vp-leave-active { transition: none; }
+  .menu-marker { display: none; }
 }
 </style>
